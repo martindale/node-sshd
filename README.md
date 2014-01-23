@@ -48,7 +48,7 @@ The handlers.authentication object presently has three properties: publickey, ke
 
 When a client attempts to authenticate, the server checks to see if the authentication handler corresponding to their chosen authentication method has been defined as a function.  If so, that function is called with the appropriate arguments.  If not, the client receives an SSH_MSG_USERAUTH_FAILURE message along with a list of other methods that they can try.
 
-The 'keyboardInteractive' and 'password' handlers will be passed as an argument an object with two properties: 'username' and 'password'.  It's up to your function to verify these credentials.  If the username and password are correct, your function should call 'this.auth.success()' in order to inform the client that authentication was successful.  If the username and password are incorrect, your function should call 'this.auth.failuire().'
+The 'keyboardInteractive' and 'password' handlers will be passed as an argument an object with two properties: 'username' and 'password'.  It's up to your function to verify these credentials.  If the username and password are correct, your function should call 'this.auth.success()' in order to inform the client that authentication was successful.  If the username and password are incorrect, your function should call 'this.auth.failure().'
 
 The 'publicKey' method hasn't been properly implemented yet, so don't bother trying to use it. :D
 
