@@ -299,7 +299,7 @@ var Session = function(conn) {
 						[	{ byte : sshdefs.SSH_MSG_USERAUTH_INFO_REQUEST },
 							"",
 							"",
-							"en-US",
+							"",
 							{ uint32 : 1 },
 							'Password: ',
 							false
