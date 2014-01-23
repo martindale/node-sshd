@@ -17,7 +17,8 @@ var settings = {
 		"publickey",
 		"keyboard-interactive",
 		"password"
-	]
+	],
+	'port' : 22
 };
 
 var handlers = {
@@ -546,7 +547,7 @@ var Session = function(conn) {
 		sendPay(
 			[	{ byte : sshdefs.SSH_MSG_CHANNEL_CLOSE },
 				{ uint32 : ((typeof channel != "number") ? 0 : channel) },
-				
+
 			]
 		);
 	}
@@ -591,5 +592,5 @@ exports.start = function() {
 			console.log('New connection');
 			var sess = new Session(conn);
 		}
-	).listen(3000);
+	).listen(settings.port);
 }

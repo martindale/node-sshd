@@ -58,9 +58,14 @@ The handlers.session object presently has five properties: shell, exec, subsyste
 In the scope of your session handler, 'this' refers to a Session object, which has a few methods that may be useful:
 
 ```js
-this.write(data, channel); // Send String or Buffer 'data' to channel 'channel' of this session. (For use with the 'shell' and 'exec' handlers.)
-this.sendExitStatus(status, channel); // Send numeric exit status code 'status' to channel 'channel' of this session, and close the channel. (For use in the 'exec' handler.)
-this.disconnect(); // Disconnect this session. (For use with the 'shell' handler.)
+// Send String or Buffer 'data' to channel 'channel' of this session. ('shell' and 'exec')
+this.write(data, channel);
+
+// Send exit status code 'status' to channel 'channel' of this session, and close the channel. ('exec')
+this.sendExitStatus(status, channel);
+
+// Disconnect this session. (For use with the 'shell' handler.)
+this.disconnect();
 ```
 
 The 'shell' session handler will be passed two arguments: 'channel' and 'eventName', where 'channel' is a channel number to be used with 'this.write()' (as above), and 'eventName' is the name of an event that will be emitted when there is new data from the client.
