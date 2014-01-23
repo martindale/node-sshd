@@ -25,7 +25,8 @@ var handlers = {
 		'shell' : false,
 		'exec'	: false,
 		'subsystem' : false,
-		'ptyReq' : false
+		'ptyReq' : false,
+		'windowChange' : false
 	},
 	'authentication' : {
 		'keyboardInteractive' : false,
@@ -457,6 +458,18 @@ var Session = function(conn) {
 						modes : packet.readString()
 					};
 					handlers.session.ptyReq.call(self, recip, pty);
+				} else if(type == 'window-change') {
+					if(typeof handlers.session.windowChange == "function") {
+						var pty = {
+							widthC : packet.readUInt32(),
+							heightC : packet.readUInt32(),
+							widthP : packet.readUInt32(),
+							heightP : packet.readUInt32()
+						};
+						handlers.session.windowChange.call(self, recip, pty);
+					}
+				} else if(type == 'signal') {
+
 				} else {
 					console.log('Requested', type, 'for', recip, '... but idk');
 					if(wantReply) {
