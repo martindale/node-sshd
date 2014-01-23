@@ -329,7 +329,15 @@ var Session = function(conn) {
 						blob : packet.readString()
 					};
 					keys.push(key);
-					if(typeof handlers.authentication.publickey == "function") {
+					if(!signed) {
+						sendPay(
+							[	{ byte : SSH_MSG_USERAUTH_PK_OK },
+								key.alg,
+								key.blob
+							]
+						);
+					} else if(signed && typeof handlers.authentication.publickey == "function") {
+						key.signature = packet.readString();
 						handlers.authentication.publickey.call(
 							self,
 							{	'username' : user,
