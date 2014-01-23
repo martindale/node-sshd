@@ -53,16 +53,19 @@ The 'publicKey' method hasn't been properly implemented yet, so don't bother try
 
 #####Session Handlers:
 
-The handlers.session object presently has four properties: shell, exec, subsystem, and pty-req.  By default, all of these are set to 'false'.  You must define your own functions here to deal with sending data to and processing data from the client.
+The handlers.session object presently has five properties: shell, exec, subsystem, ptyReq, and windowChange.  By default, all of these are set to 'false'.  You must define your own functions here to deal with sending data to and processing data from the client.
 
-In the scope of your session handler, 'this' refers to a Session object, which has two methods that may be useful in this context:
+In the scope of your session handler, 'this' refers to a Session object, which has a few methods that may be useful:
 
 ```js
-this.write(data, channel); // Send String or Buffer 'data' to channel 'channel' of this session
-this.disconnect(); // Disconnect this session
+this.write(data, channel); // Send String or Buffer 'data' to channel 'channel' of this session. (For use with the 'shell' and 'exec' handlers.)
+this.sendExitStatus(status, channel); // Send numeric exit status code 'status' to channel 'channel' of this session, and close the channel. (For use in the 'exec' handler.)
+this.disconnect(); // Disconnect this session. (For use with the 'shell' handler.)
 ```
 
-Your session handler will be passed two arguments: 'channel' and 'eventName', where 'channel' is a channel number to be used with 'this.write()' (as above), and 'eventName' is the name of an event that will be emitted when there is new data from the client.
+The 'shell' session handler will be passed two arguments: 'channel' and 'eventName', where 'channel' is a channel number to be used with 'this.write()' (as above), and 'eventName' is the name of an event that will be emitted when there is new data from the client.
+
+The 'exec' session handler will be passed two arguments: 'channel' (same as above,) and 'command', where 'command' is a string representing the command the client wishes to execute.
 
 Yes, I know, this is all still a bit clunky. :D
 
@@ -97,6 +100,12 @@ sshd.handlers.session.shell = function(channel, eventName) {
             self.write(data, channel);
         }
     );
+}
+
+sshd.handlers.session.exec = function(channel, command) {
+    var self = this;
+    this.write("Your command was " + command + ".\r\n", channel);
+    this.sendExitStatus(0, channel);
 }
 
 sshd.start();
