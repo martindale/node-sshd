@@ -443,7 +443,7 @@ var Session = function(conn) {
 						sendPay([{ byte : sshdefs.SSH_MSG_CHANNEL_SUCCESS }, { uint32 : recip }]);
 
 					var command = packet.readString();
-					handlers.session.exec.call(self, recip, eventName, command);
+					handlers.session.exec.call(self, recip, command);
 
 				} else if(type == 'subsystem' && typeof handlers.session.subsystem == "function") {
 
@@ -541,6 +541,12 @@ var Session = function(conn) {
 				"exit-status",
 				false,
 				{ uint32 : status }
+			]
+		);
+		sendPay(
+			[	{ byte : sshdefs.SSH_MSG_CHANNEL_CLOSE },
+				{ uint32 : ((typeof channel != "number") ? 0 : channel) },
+				
 			]
 		);
 	}
