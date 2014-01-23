@@ -431,24 +431,37 @@ var Session = function(conn) {
 				var eventName = "data" + recip;
 
 				if(type == 'shell' && typeof handlers.session.shell == "function") {
+
 					if(wantReply)
 						sendPay([{ byte : sshdefs.SSH_MSG_CHANNEL_SUCCESS }, { uint32 : recip }]);
-				handlers.session.shell.call(self, recip, eventName);
+
+					handlers.session.shell.call(self, recip, eventName);
+
 				} else if(type == 'exec' && typeof handlers.session.exec == "function") {
+
 					if(wantReply)
 						sendPay([{ byte : sshdefs.SSH_MSG_CHANNEL_SUCCESS }, { uint32 : recip }]);
+
 					var command = packet.readString();
-					handlers.session.exec.call(self, recip, command);
+					handlers.session.exec.call(self, recip, eventName, command);
+
 				} else if(type == 'subsystem' && typeof handlers.session.subsystem == "function") {
+
 					if(wantReply)
 						sendPay([{ byte : sshdefs.SSH_MSG_CHANNEL_SUCCESS }, { uint32 : recip }]);
+
 					var subsystem = packet.readString();
 					handlers.session.subsystem.call(self, recip, eventName, subsystem);
+
 				} else if(type == 'env') {
+
 					console.log('Environment:', packet.readString(), '=', packet.readString());
+
 				} else if(type == 'pty-req' && typeof handlers.session.ptyReq == "function") {
+
 					if(wantReply)
 						sendPay([{ byte : sshdefs.SSH_MSG_CHANNEL_SUCCESS }, { uint32 : recip }]);
+
 					var pty = {
 						term : packet.readString(),
 						widthC : packet.readUInt32(),
@@ -458,7 +471,9 @@ var Session = function(conn) {
 						modes : packet.readString()
 					};
 					handlers.session.ptyReq.call(self, recip, pty);
+
 				} else if(type == 'window-change') {
+
 					if(typeof handlers.session.windowChange == "function") {
 						var pty = {
 							widthC : packet.readUInt32(),
@@ -468,9 +483,11 @@ var Session = function(conn) {
 						};
 						handlers.session.windowChange.call(self, recip, pty);
 					}
+
 				} else if(type == 'signal') {
 
 				} else {
+
 					console.log('Requested', type, 'for', recip, '... but idk');
 					if(wantReply) {
 						sendPay(
@@ -479,6 +496,7 @@ var Session = function(conn) {
 							]
 						);
 					}
+
 				};
 				break;
 
