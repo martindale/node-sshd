@@ -49,7 +49,7 @@ When a client attempts to authenticate, the server checks to see if the authenti
 
 The 'keyboardInteractive' and 'password' handlers will be passed as an argument an object with two properties: 'username' and 'password'.  It's up to your function to verify these credentials.  If the username and password are correct, your function should call 'this.auth.success()' in order to inform the client that authentication was successful.  If the username and password are incorrect, your function should call 'this.auth.failuire().'
 
-There is a bit of work yet to be done on the 'publicKey' handler, so don't use it yet.
+The 'publicKey' method hasn't been properly implemented yet, so don't bother trying to use it. :D
 
 #####Session Handlers:
 
@@ -70,6 +70,9 @@ Yes, I know, this is all still a bit clunky. :D
 
 ```js
 var sshd = require('./sshd.js');
+
+sshd.settings.privateKeyFile = "/path/to/your/private/key";
+sshd.settings.publicKeyFile = "/path/to/your/public/key";
 
 sshd.handlers.authentication.password = function(userDetails) {
     if(userDetails.username == "root" && userDetails.password == "toor")

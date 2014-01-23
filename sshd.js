@@ -38,8 +38,9 @@ var Session = function(conn) {
 
 	var self = this;
 
-	var cipher, cookie, deciph, dh, e, keyson, macC, macS, session, user;
+	var cookie, deciph, dh, e, keyson, macC, macS, session, user;
 
+	var cipher = false;
 	var macLen = 0;
 	var seqS = 0;
 	var seqC = 0;
@@ -336,9 +337,9 @@ var Session = function(conn) {
 								key.blob
 							]
 						);
-					} else if(signed && typeof handlers.authentication.publickey == "function") {
+					} else if(signed && typeof handlers.authentication.publicKey == "function") {
 						key.signature = packet.readString();
-						handlers.authentication.publickey.call(
+						handlers.authentication.publicKey.call(
 							self,
 							{	'username' : user,
 								'key' : key
