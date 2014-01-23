@@ -334,7 +334,7 @@ var Session = function(conn) {
 					keys.push(key);
 					if(!signed) {
 						sendPay(
-							[	{ byte : SSH_MSG_USERAUTH_PK_OK },
+							[	{ byte : sshdefs.SSH_MSG_USERAUTH_PK_OK },
 								key.alg,
 								key.blob
 							]
