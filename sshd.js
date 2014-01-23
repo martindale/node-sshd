@@ -516,6 +516,17 @@ var Session = function(conn) {
 		);
 	}
 
+	this.sendExitStatus = function(status, channel) {
+		sendPay(
+			[	{ byte : sshdefs.SSH_MSG_CHANNEL_REQUEST },
+				{ uint32 : ((typeof channel != "number") ? 0 : channel) },
+				"exit-status",
+				false,
+				{ uint32 : status }
+			]
+		);
+	}
+
 	this.disconnect = function() {
 		sendPay(
 			[	{ byte : sshdefs.SSH_MSG_DISCONNECT },
