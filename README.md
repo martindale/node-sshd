@@ -31,7 +31,7 @@ The 'settings' property has the following sub-properties:
 * **privateKeyFile** (string) The path to and name of your server's private key file. (Default: 'rsa_host_key')
 * **publicKeyFile** (string) The path to and name of your server's public key file. (Default: 'rsa_host_key.pub')
 * **authenticationMethods** (array) An array of strings describing authentication methods that your server will accept, in order of preference. (Default: ["publickey", "keyboard-interactive", "password"].)  You have the option of adding "none" to this array, in which case all clients will immediately be sent an SSH_MSG_USERAUTH_SUCCESS message.  Support for arbitrary authentication methods may be added in the future.
-* **port** (number) The port to listen on.
+* **port** (number) The port to listen on. (Default: 22)
 
 ####Handlers
 
