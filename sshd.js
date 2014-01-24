@@ -43,9 +43,10 @@ var Session = function(conn) {
 	var self = this;
 
 	var	cookie, CTSCompressionAlgorithm, CTSEncryptionAlgorithm,
-		CTSMacAlgorithm, deciph, dh, e, hostKey, hostDSAKey, hostRSAKey,
-		hostKeyAlgorithm, keyson, kexAlgorithm, macC, macS, session, STCCompressionAlgorithm,
-		STCEncryptionAlgorithm, STCMacAlgorithm, user;
+		CTSMacAlgorithm, deciph, dh, e, hostKey, hostDSAKey, hostDSAPub,
+		hostRSAKey, hostRSAPub,	hostKeyAlgorithm, keyson, kexAlgorithm, macC,
+		macS, session, STCCompressionAlgorithm, STCEncryptionAlgorithm,
+		STCMacAlgorithm, user;
 
 	var cipher = false;
 	var macLen = 0;
@@ -255,11 +256,13 @@ var Session = function(conn) {
 					self.disconnect(3, "Unable to negotiate server host key algorithm.");
 					break;
 				}
-				if(hostKeyAlgorithm == "ssh-rsa")
+				if(hostKeyAlgorithm == "ssh-rsa") {
 					hostKey = hostRSAKey;
-				else
+					hostPub = hostRSAPub;
+				} else {
 					hostKey = hostDSAKey;
-
+					hostPub = hostDSAPub
+				}
 
 				CTSEncryptionAlgorithm = returnFirstMatch(encryptionAlgorithms, packet.readNameList());
 				if(typeof CTSEncryptionAlgorithm != "string") {
