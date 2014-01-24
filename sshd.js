@@ -71,8 +71,8 @@ var Session = function(conn) {
 	];
 
 	var macAlgorithms = [
-		'hmac-md5'//,
-//		'hmac-sha1'
+		'hmac-md5',
+		'hmac-sha1'
 	];
 
 	var compressionAlgorithms = [
@@ -104,7 +104,7 @@ var Session = function(conn) {
 				data = data.slice(eof + 1);
 			}
 			while(data.length >= 4) {
-				var packet = new PacketReader(data, macLen, deciph, macC, seqC, 'md5');
+				var packet = new PacketReader(data, macLen, deciph, macC, seqC, CTSMacAlgorithm);
 				getPacket(packet);
 				seqC += 1;
 				data = data.slice(packet.totLen);
@@ -166,7 +166,8 @@ var Session = function(conn) {
 		if(macLen) {
 			var asdff = new Buffer(4);
 			asdff.writeUInt32BE(seqS, 0);
-			var mac = crypto.createHmac('md5', macS.slice(0, 16)); // TODO: net::ssh key_expander.rb
+			// We'll just assume that STCMacAlgorithm is something like 'hmac-sha1'
+			var mac = crypto.createHmac((STCMacAlgorithm.split('-')[1], macS.slice(0, 16)); // TODO: net::ssh key_expander.rb
 			mac.write(Buffer.concat([asdff, buffer]))
 			mac = new Buffer(mac.digest());
 		}
@@ -231,9 +232,9 @@ var Session = function(conn) {
 					)
 				);
 				hashIn.push(hostPub);
+
 				packet.readString(16); // Get rid of the cookie
 
-				// Determine the KEX algorithm to use
 				kexAlgorithm = returnFirstMatch(kexAlgorithms, packet.readNameList());
 				if(typeof kexAlgorithm != "string") {
 					self.disconnect(3, "Unable to negotiate KEX algorithm.");
@@ -280,7 +281,16 @@ var Session = function(conn) {
 				if(typeof STCCompressionAlgorithm != "string")
 					self.disconnect(3, "Unable to negotiate server-to-client compression algorithm.");
 
-				console.log(kexAlgorithm, hostKeyAlgorithm, CTSEncryptionAlgorithm, STCEncryptionAlgorithm, CTSMacAlgorithm, STCMacAlgorithm, CTSCompressionAlgorithm, STCCompressionAlgorithm);
+				console.log(
+					kexAlgorithm,
+					hostKeyAlgorithm,
+					CTSEncryptionAlgorithm,
+					STCEncryptionAlgorithm,
+					CTSMacAlgorithm,
+					STCMacAlgorithm,
+					CTSCompressionAlgorithm,
+					STCCompressionAlgorithm
+				);
 
 				break;
 
