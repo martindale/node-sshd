@@ -241,7 +241,6 @@ var Session = function(conn) {
 						]
 					)
 				);
-				hashIn.push(hostPub);
 
 				packet.readString(16); // Get rid of the cookie
 
@@ -263,6 +262,7 @@ var Session = function(conn) {
 					hostKey = hostDSAKey;
 					hostPub = hostDSAPub
 				}
+				hashIn.push(hostPub);
 
 				CTSEncryptionAlgorithm = returnFirstMatch(encryptionAlgorithms, packet.readNameList());
 				if(typeof CTSEncryptionAlgorithm != "string") {
