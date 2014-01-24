@@ -225,8 +225,6 @@ var Session = function(conn) {
 				console.log("MAC Algorithms >>: " + packet.readNameList());
 				console.log("Cmp Algorithms <<: " + packet.readNameList());
 				console.log("Cmp Algorithms >>: " + packet.readNameList());
-				console.log("Languages <<: " + packet.readNameList());
-				console.log("Languages >>: " + packet.readNameList());
 				break;
 
 			case sshdefs.SSH_MSG_KEX_DH_GEX_REQUEST_OLD:
