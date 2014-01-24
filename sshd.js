@@ -55,31 +55,31 @@ var Session = function(conn) {
 	var keys = [];
 	var conn = conn;
 
-	var kexAlgorithms = [
-		'diffie-hellman-group-exchange-sha256'//,
+	var kexAlgorithms = {
+		'diffie-hellman-group-exchange-sha256' : ""//,
 //		'diffie-hellman-group1-sha1',
 //		'diffie-hellman-group14-sha1'
-	];
+	};
 
-	var hostKeyAlgorithms = [
-		'ssh-rsa',
-		'ssh-dss'
-	];
+	var hostKeyAlgorithms = {
+		'ssh-rsa' : "RSA-SHA1",
+		'ssh-dss' : "DSA-SHA1"
+	};
 
 	// We could specify different schemes for server->client and client-> server, but we don't.
-	var encryptionAlgorithms = [
-		'aes256-ctr'//,
+	var encryptionAlgorithms = {
+		'aes256-ctr' : ""//,
 //		'3des-cbc'
-	];
+	};
 
-	var macAlgorithms = [
-		'hmac-md5',
-		'hmac-sha1'
-	];
+	var macAlgorithms = {
+		'hmac-md5' : "md5",
+		'hmac-sha1' : "sha1"
+	};
 
-	var compressionAlgorithms = [
-		'none'
-	];
+	var compressionAlgorithms = {
+		'none' : ""
+	};
 
 	conn.on(
 		'error',
@@ -112,7 +112,7 @@ var Session = function(conn) {
 					deciph,
 					macC,
 					seqC,
-					((typeof CTSMacAlgorithm == "undefined") ? "" : CTSMacAlgorithm.split('-')[1])
+					((typeof CTSMacAlgorithm == "undefined") ? "" : macAlgorithms[CTSMacAlgorithm])
 				);
 				getPacket(packet);
 				seqC += 1;
@@ -146,17 +146,17 @@ var Session = function(conn) {
 		}
 	);
 
-	var returnFirstMatch = function(arr1, arr2) {
-		for(var a = 0; a < arr2.length; a++) {
-			if(arr1.indexOf(arr2[a]) < 0)
+	var returnFirstMatch = function(obj, arr) {
+		for(var a = 0; a < arr.length; a++) {
+			if(typeof obj[arr[a]] == "undefined")
 				continue;
-			return arr2[a];
+			return arr[a];
 		}
 		return false;
 	}
 
 	var signBuffer = function(buffer) {
-		var signer = crypto.createSign(hostKeyAlgorithm.split('-')[1].toUpperCase() + '-SHA1');
+		var signer = crypto.createSign(hostKeyAlgorithms[hostKeyAlgorithm]);
 		signer.write(buffer);
 		var signature = signer.sign(hostKey);
 		return composePacket([hostKeyAlgorithm, signature]);
@@ -176,7 +176,7 @@ var Session = function(conn) {
 			var asdff = new Buffer(4);
 			asdff.writeUInt32BE(seqS, 0);
 			// We'll just assume that STCMacAlgorithm is something like 'hmac-sha1'
-			var mac = crypto.createHmac(STCMacAlgorithm.split('-')[1], macS.slice(0, 16)); // TODO: net::ssh key_expander.rb
+			var mac = crypto.createHmac(macAlgorithms[STCMacAlgorithm], macS.slice(0, 16)); // TODO: net::ssh key_expander.rb
 			mac.write(Buffer.concat([asdff, buffer]))
 			mac = new Buffer(mac.digest());
 		}
