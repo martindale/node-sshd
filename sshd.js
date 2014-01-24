@@ -280,6 +280,8 @@ var Session = function(conn) {
 				if(typeof STCCompressionAlgorithm != "string")
 					self.disconnect(3, "Unable to negotiate server-to-client compression algorithm.");
 
+				console.log(kexAlgorithm, hostKeyAlgorithm, CTSEncryptionAlgorithm, STCEncryptionAlgorithm, CTSMacAlgorithm, STCMacAlgorithm, CTSCompressionAlgorithm, STCCompressionAlgorithm);
+
 				break;
 
 			case sshdefs.SSH_MSG_KEX_DH_GEX_REQUEST_OLD:
