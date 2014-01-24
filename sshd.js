@@ -156,7 +156,7 @@ var Session = function(conn) {
 	}
 
 	var signBuffer = function(buffer) {
-		var signer = crypto.createSign('RSA-SHA1');
+		var signer = crypto.createSign(hostKeyAlgorithm.split('-')[1].toUpperCase() + '-SHA1');
 		signer.write(buffer);
 		var signature = signer.sign(hostKey);
 		return composePacket([hostKeyAlgorithm, signature]);
