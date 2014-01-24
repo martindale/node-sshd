@@ -8,7 +8,7 @@ var fs = require('fs'),
 
 const sshdefs = require('./sshdefs.js');
 
-var hostKey, hostPub;
+var hostKey, hostPub, hostDSAKey, hostDSAPub, hostRSAKey, hostRSAPub;
 
 var settings = {
 	'privateRSAKeyFile' : "rsa_host_key",
@@ -43,10 +43,9 @@ var Session = function(conn) {
 	var self = this;
 
 	var	cookie, CTSCompressionAlgorithm, CTSEncryptionAlgorithm,
-		CTSMacAlgorithm, deciph, dh, e, hostDSAKey, hostDSAPub, hostRSAKey,
-		hostRSAPub,	hostKeyAlgorithm, keyson, kexAlgorithm, macC, macS,
-		session, STCCompressionAlgorithm, STCEncryptionAlgorithm,
-		STCMacAlgorithm, user;
+		CTSMacAlgorithm, deciph, dh, e, hostKeyAlgorithm, keyson,
+		kexAlgorithm, macC, macS, session, STCCompressionAlgorithm,
+		STCEncryptionAlgorithm, STCMacAlgorithm, user;
 
 	var cipher = false;
 	var macLen = 0;
