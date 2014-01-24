@@ -69,7 +69,7 @@ var Session = function(conn) {
 	// We could specify different schemes for server->client and client-> server, but we don't.
 	var encryptionAlgorithms = {
 		'aes256-ctr' : "aes-256-ctr",
-		'3des-cbc' : "des3-ede3-cbc" // I think
+		'3des-cbc' : "des-ede3-cbc" // I think
 	};
 
 	var macAlgorithms = {
