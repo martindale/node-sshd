@@ -56,8 +56,8 @@ var Session = function(conn) {
 	var conn = conn;
 
 	var kexAlgorithms = {
-		'diffie-hellman-group-exchange-sha256' : "SHA256"//,
-//		'diffie-hellman-group1-sha1',
+		'diffie-hellman-group-exchange-sha256' : "SHA256",
+		'diffie-hellman-group1-sha1' : "SHA1",
 //		'diffie-hellman-group14-sha1'
 	};
 
@@ -68,8 +68,8 @@ var Session = function(conn) {
 
 	// We could specify different schemes for server->client and client-> server, but we don't.
 	var encryptionAlgorithms = {
-		'aes256-ctr' : "aes-256-ctr"//,
-//		'3des-cbc'
+		'aes256-ctr' : "aes-256-ctr",
+		'3des-cbc' : "des3-ede3-cbc" // I think
 	};
 
 	var macAlgorithms = {
