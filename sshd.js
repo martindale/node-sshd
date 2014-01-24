@@ -42,38 +42,60 @@ var Session = function(conn) {
 
 	var self = this;
 
-	var	cookie, CTSCompressionAlgorithm, CTSEncryptionAlgorithm,
-		CTSMacAlgorithm, dh, e, hostKeyAlgorithm, keyson, kexAlgorithm, macC,
-		macS, session, STCCompressionAlgorithm,	STCEncryptionAlgorithm,
-		STCMacAlgorithm, user;
+	// Some of these probably don't need to be scoped so high
+	var	cipher = false,
+		cookie,
+		conn = conn,
+		deciph = false,
+		dh,
+		e,
+		hashIn = [],
+		keys = [],
+		keyson,
+		macC,
+		macS,
+		macLen = 0,
+		seqS = 0,
+		seqC = 0,
+		session,
+		user;
 
-	var deciph = false, cipher = false;
-	var macLen = 0, seqS = 0, seqC = 0;
-	var hashIn = [], keys = [];
-	var conn = conn;
+	var	CTSCompressionAlgorithm, // Client-to-server compression algorithm (per compressionAlgorithms, below)
+		STCCompressionAlgorithm, // Server-to-client compression algorithm (per compressionAlgorithms, below)
+		CTSEncryptionAlgorithm, // Client-to-server encryption algorithm (per encryptionAlgorithms, below)
+		STCEncryptionAlgorithm, // Server-to-client encryption algorithm (per encryptionAlgorithms, below)
+		CTSMacAlgorithm, // Client-to-server MAC algorithm (per macAlgorithms, below)
+		STCMacAlgorithm, // Server-to-client MAC algorithm (per macAlgorithms, below)
+		hostKeyAlgorithm, // Server host key algorithm (per hostKeyAlgorithms, below)
+		kexAlgorithm; // Key exchange algorithm (per kexAlgorithms, below)
 
+	// Key Exchange Algorithms that this server supports, mapped to crypto()-friendly names
 	var kexAlgorithms = {
 		'diffie-hellman-group-exchange-sha256' : "SHA256",
 		'diffie-hellman-group1-sha1' : "SHA1",
 //		'diffie-hellman-group14-sha1'
 	};
 
+	// Server host key algorithms that this server supports, mapped to crypto()-friendly names
 	var hostKeyAlgorithms = {
 		'ssh-rsa' : "RSA-SHA1",
 		'ssh-dss' : "DSA-SHA1"
 	};
 
-	// We could specify different schemes for server->client and client-> server, but we don't.
+	// Encryption algorithms that this server supports, mapped to crypto()-friendly names
 	var encryptionAlgorithms = {
 		'aes256-ctr' : "aes-256-ctr",
 		'3des-cbc' : "des-ede3-cbc" // I think
 	};
 
+	// MAC algorithms that this server supports, mapped to crypto()-friendly names.
 	var macAlgorithms = {
 		'hmac-md5' : "md5",
 		'hmac-sha1' : "sha1"
 	};
 
+	// Compression algorithms that this server supports. "none" for now.
+	// (Currently used only to generate a list to send to the client during key exchange.)
 	var compressionAlgorithms = {
 		'none' : "none"
 	};
@@ -172,7 +194,6 @@ var Session = function(conn) {
 		if(macLen) {
 			var asdff = new Buffer(4);
 			asdff.writeUInt32BE(seqS, 0);
-			// We'll just assume that STCMacAlgorithm is something like 'hmac-sha1'
 			var mac = crypto.createHmac(macAlgorithms[STCMacAlgorithm], macS.slice(0, 16)); // TODO: net::ssh key_expander.rb
 			mac.write(Buffer.concat([asdff, buffer]))
 			mac = new Buffer(mac.digest());
@@ -304,7 +325,6 @@ var Session = function(conn) {
 					CTSCompressionAlgorithm,
 					STCCompressionAlgorithm
 				);
-
 				break;
 
 			case sshdefs.SSH_MSG_KEX_DH_GEX_REQUEST_OLD:
