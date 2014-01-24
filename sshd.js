@@ -167,7 +167,7 @@ var Session = function(conn) {
 			var asdff = new Buffer(4);
 			asdff.writeUInt32BE(seqS, 0);
 			// We'll just assume that STCMacAlgorithm is something like 'hmac-sha1'
-			var mac = crypto.createHmac((STCMacAlgorithm.split('-')[1], macS.slice(0, 16)); // TODO: net::ssh key_expander.rb
+			var mac = crypto.createHmac(STCMacAlgorithm.split('-')[1], macS.slice(0, 16)); // TODO: net::ssh key_expander.rb
 			mac.write(Buffer.concat([asdff, buffer]))
 			mac = new Buffer(mac.digest());
 		}
