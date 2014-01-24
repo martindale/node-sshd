@@ -216,7 +216,7 @@ var Session = function(conn) {
 					)
 				);
 				hashIn.push(hostPub);
-				console.log("Cookie: " + packet.readUInt16());
+				console.log("Cookie: " + packet.readString(16));
 				console.log("List: " + packet.readNameList());
 				break;
 
