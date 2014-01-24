@@ -40,8 +40,10 @@ var Session = function(conn) {
 
 	var self = this;
 
-	var	cookie, deciph, dh, e, encryptionAlgorithm, keyson, kexAlgorithm, mac,
-		macC, macS, session, user;
+	var	cookie, CTSCompressionAlgorithm, CTSEncryptionAlgorithm,
+		CTSMacAlgorithm, deciph, dh, e, hostKeyAlgorithm, keyson,
+		kexAlgorithm, macC, macS, session, STCCompressionAlgorithm,
+		STCEncryptionAlgorithm, STCMacAlgorithm, user;
 
 	var cipher = false;
 	var macLen = 0;
@@ -71,6 +73,10 @@ var Session = function(conn) {
 	var macAlgorithms = [
 		'hmac-md5'//,
 //		'hmac-sha1'
+	];
+
+	var compressionAlgorithms = [
+		'none'
 	];
 
 	conn.on(
@@ -130,6 +136,15 @@ var Session = function(conn) {
 			);
 		}
 	);
+
+	var returnFirstMatch = function(arr1, arr2) {
+		for(var a = 0; a < arr2.length; a++) {
+			if(arr1.indexOf(arr2[a]) < 0)
+				continue;
+			return arr2[a];
+		}
+		return false;
+	}
 
 	var signBuffer = function(buffer) {
 		var signer = crypto.createSign('RSA-SHA1');
@@ -216,17 +231,55 @@ var Session = function(conn) {
 					)
 				);
 				hashIn.push(hostPub);
-				packet.readString(16);
-				var kexAlgs = packet.readNameList();
-				console.log(Array.isArray(kexAlgs));
-				console.log("KEX Algorithms: " + kexAlgs);
-				console.log("SHK Algorithms: " + packet.readNameList());
-				console.log("Enc Algorithms <<: " + packet.readNameList());
-				console.log("Enc Algorithms >>: " + packet.readNameList());
-				console.log("MAC Algorithms <<: " + packet.readNameList());
-				console.log("MAC Algorithms >>: " + packet.readNameList());
-				console.log("Cmp Algorithms <<: " + packet.readNameList());
-				console.log("Cmp Algorithms >>: " + packet.readNameList());
+				packet.readString(16); // Get rid of the cookie
+
+				// Determine the KEX algorithm to use
+				kexAlgorithm = returnFirstMatch(kexAlgorithms, packet.readNameList());
+				if(typeof kexAlgorithm != "string") {
+					self.disconnect(3, "Unable to negotiate KEX algorithm.");
+					break;
+				}
+
+				hostKeyAlgorithm = returnFirstMatch(hostKeyAlgorithms, packet.readNameList());
+				if(typeof hostKeyAlgorithm != "string") {
+					self.disconnect(3, "Unable to negotiate server host key algorithm.");
+					break;
+				}
+
+				CTSEncryptionAlgorithm = returnFirstMatch(encryptionAlgorithms, packet.readNameList());
+				if(typeof CTSEncryptionAlgorithm != "string") {
+					self.disconnect(3, "Unable to negotiate client-to-server encryption algorithm.");
+					break;
+				}
+
+				STCEncryptionAlgorithm = returnFirstMatch(encryptionAlgorithms, packet.readNameList());
+				if(typeof STCEncryptionAlgorithm != "string") {
+					self.disconnect(3, "Unable to negotiate server-to-client encryption algorithm.");
+					break;
+				}
+
+				CTSMacAlgorithm = returnFirstMatch(macAlgorithms, packet.readNameList());
+				if(typeof CTSMacAlgorithm != "string") {
+					self.disconnect(3, "Unable to negotiate client-to-server MAC algorithm.");
+					break;
+				}
+
+				STCMacAlgorithm = returnFirstMatch(macAlgorithms, packet.readNameList());
+				if(typeof STCMacAlgorithm != "string") {
+					self.disconnect(3, "Unable to negotiate server-to-client MAC algorithm.");
+					break;
+				}
+
+				CTSCompressionAlgorithm = returnFirstMatch(compressionAlgorithms, packet.readNameList());
+				if(typeof CTSCompressionAlgorithm != "string") {
+					self.disconnect(3, "Unable to negotiate client-to-server compression algorithm.");
+					break;
+				}
+
+				STCCompressionAlgorithm = returnFirstMatch(compressionAlgorithms, packet.readNameList());
+				if(typeof STCCompressionAlgorithm != "string")
+					self.disconnect(3, "Unable to negotiate server-to-client compression algorithm.");
+
 				break;
 
 			case sshdefs.SSH_MSG_KEX_DH_GEX_REQUEST_OLD:
@@ -586,11 +639,11 @@ var Session = function(conn) {
 		);
 	}
 
-	this.disconnect = function() {
+	this.disconnect = function(code, reason) {
 		sendPay(
 			[	{ byte : sshdefs.SSH_MSG_DISCONNECT },
-				{ byte : 0 },
-				"",
+				{ byte : ((typeof code == "number") ? code : 0) },
+				((typeof reason == "string") ? reason : ""),
 				"en-US"
 			]
 		);
