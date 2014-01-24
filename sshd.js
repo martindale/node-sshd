@@ -216,7 +216,7 @@ var Session = function(conn) {
 					)
 				);
 				hashIn.push(hostPub);
-				console.log(packet.readString());
+				console.log(packet.readUInt8() + packet.readUInt8());
 				console.log(packet.readNameList());
 				console.log(packet.readNameList());
 				console.log(packet.readNameList());
