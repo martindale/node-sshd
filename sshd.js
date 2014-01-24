@@ -11,8 +11,10 @@ const sshdefs = require('./sshdefs.js');
 var hostKey, hostPub;
 
 var settings = {
-	'privateKeyFile' : "rsa_host_key",
-	'publicKeyFile' : "rsa_host_key.pub",
+	'privateRSAKeyFile' : "rsa_host_key",
+	'publicRSAKeyFile' : "rsa_host_key.pub",
+	'privateDSAKeyFile' : "dsa_host_key",
+	'publicDSAKeyFile' : "dsa_host_key.pub",
 	'authenticationMethods' : [
 		"publickey",
 		"keyboard-interactive",
@@ -41,8 +43,8 @@ var Session = function(conn) {
 	var self = this;
 
 	var	cookie, CTSCompressionAlgorithm, CTSEncryptionAlgorithm,
-		CTSMacAlgorithm, deciph, dh, e, hostKeyAlgorithm, keyson,
-		kexAlgorithm, macC, macS, session, STCCompressionAlgorithm,
+		CTSMacAlgorithm, deciph, dh, e, hostKey, hostDSAKey, hostRSAKey,
+		hostKeyAlgorithm, keyson, kexAlgorithm, macC, macS, session, STCCompressionAlgorithm,
 		STCEncryptionAlgorithm, STCMacAlgorithm, user;
 
 	var cipher = false;
@@ -60,8 +62,8 @@ var Session = function(conn) {
 	];
 
 	var hostKeyAlgorithms = [
-		'ssh-rsa'//,
-//		'ssh-dss'
+		'ssh-rsa',
+		'ssh-dss'
 	];
 
 	// We could specify different schemes for server->client and client-> server, but we don't.
@@ -157,7 +159,7 @@ var Session = function(conn) {
 		var signer = crypto.createSign('RSA-SHA1');
 		signer.write(buffer);
 		var signature = signer.sign(hostKey);
-		return composePacket(['ssh-rsa', signature]);
+		return composePacket([hostKeyAlgorithm, signature]);
 	}
 
 	var sendPay = function(ast) {
@@ -253,6 +255,11 @@ var Session = function(conn) {
 					self.disconnect(3, "Unable to negotiate server host key algorithm.");
 					break;
 				}
+				if(hostKeyAlgorithm == "ssh-rsa")
+					hostKey = hostRSAKey;
+				else
+					hostKey = hostDSAKey;
+
 
 				CTSEncryptionAlgorithm = returnFirstMatch(encryptionAlgorithms, packet.readNameList());
 				if(typeof CTSEncryptionAlgorithm != "string") {
@@ -688,9 +695,14 @@ util.inherits(Session, events.EventEmitter);
 exports.settings = settings;
 exports.handlers = handlers;
 exports.start = function() {
-	hostKey = fs.readFileSync(settings.privateKeyFile).toString();
-	hostPub = new Buffer(
-		fs.readFileSync(settings.publicKeyFile).toString().split(' ')[1],
+	hostRSAKey = fs.readFileSync(settings.privateRSAKeyFile).toString();
+	hostRSAPub = new Buffer(
+		fs.readFileSync(settings.publicRSAKeyFile).toString().split(' ')[1],
+		'base64'
+	);
+	hostDSAKey = fs.readFileSync(settings.privateDSAKeyFile).toString();
+	hostDSAPub = new Buffer(
+		fs.readFileSync(settings.publicDSAKeyFile).toString().split(' ')[1],
 		'base64'
 	);
 	net.createServer(
