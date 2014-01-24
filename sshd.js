@@ -216,8 +216,10 @@ var Session = function(conn) {
 					)
 				);
 				hashIn.push(hostPub);
-				console.log("Cookie: " + packet.readString(16));
-				console.log("KEX Algorithms: " + packet.readNameList());
+				packet.readString(16);
+				var kexAlgs = packet.readNameList();
+				console.log(Array.isArray(kexAlgs));
+				console.log("KEX Algorithms: " + kexAlgs);
 				console.log("SHK Algorithms: " + packet.readNameList());
 				console.log("Enc Algorithms <<: " + packet.readNameList());
 				console.log("Enc Algorithms >>: " + packet.readNameList());
