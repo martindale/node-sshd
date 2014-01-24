@@ -78,8 +78,8 @@ var Session = function(conn) {
 
 	// Server host key algorithms that this server supports, mapped to crypto()-friendly names
 	var hostKeyAlgorithms = {
-		'ssh-rsa' : "RSA-SHA1",
-		'ssh-dss' : "DSA-SHA1"
+		'ssh-rsa' : "RSA-SHA1"//,
+//		'ssh-dss' : "DSA-SHA1"
 	};
 
 	// Encryption algorithms that this server supports, mapped to crypto()-friendly names
