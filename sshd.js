@@ -10,6 +10,8 @@ const sshdefs = require('./sshdefs.js');
 
 var hostKey, hostPub, hostDSAKey, hostDSAPub, hostRSAKey, hostRSAPub;
 
+var serverString = "SSH-2.0-sshd.js_0.0.1 Experimental, low-security SSHd implemented in NodeJS";
+
 var settings = {
 	'privateRSAKeyFile' : "rsa_host_key",
 	'publicRSAKeyFile' : "rsa_host_key.pub",
@@ -121,7 +123,7 @@ var Session = function(conn) {
 				var eof = data.toString().indexOf('\n');
 				console.log('Client header:', data.toString('utf-8', 8, eof-1));
 				hashIn.push(data.toString('utf8', 0, eof-1))
-				hashIn.push('SSH-2.0-sshd.js_0.0.1 Experimental, low-security SSHd implemented in NodeJS');
+				hashIn.push(serverString);
 				data = data.slice(eof + 1);
 			}
 			while(data.length >= 4) {
@@ -143,7 +145,7 @@ var Session = function(conn) {
 	crypto.randomBytes(
 		16,
 		function (err, rand) {
-			conn.write('SSH-2.0-sshd.js_0.0.1 Experimental, low-security SSHd implemented in NodeJS\r\n');
+			conn.write(serverString + "\r\n");
 			cookie = rand;
 			sendPay(
 				[	{ byte : sshdefs.SSH_MSG_KEXINIT },
