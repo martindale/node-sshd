@@ -56,7 +56,7 @@ var Session = function(conn) {
 	var conn = conn;
 
 	var kexAlgorithms = {
-		'diffie-hellman-group-exchange-sha256' : ""//,
+		'diffie-hellman-group-exchange-sha256' : "SHA256"//,
 //		'diffie-hellman-group1-sha1',
 //		'diffie-hellman-group14-sha1'
 	};
@@ -68,7 +68,7 @@ var Session = function(conn) {
 
 	// We could specify different schemes for server->client and client-> server, but we don't.
 	var encryptionAlgorithms = {
-		'aes256-ctr' : ""//,
+		'aes256-ctr' : "aes-256-ctr"//,
 //		'3des-cbc'
 	};
 
@@ -78,7 +78,7 @@ var Session = function(conn) {
 	};
 
 	var compressionAlgorithms = {
-		'none' : ""
+		'none' : "none"
 	};
 
 	conn.on(
@@ -135,8 +135,8 @@ var Session = function(conn) {
 					Object.keys(encryptionAlgorithms),
 					Object.keys(macAlgorithms),
 					Object.keys(macAlgorithms),
-					['none'],
-					['none'],
+					Object.keys(compressionAlgorithms),
+					Object.keys(compressionAlgorithms),
 					[],
 					[],
 					false,
@@ -191,7 +191,7 @@ var Session = function(conn) {
 	}
 
 	var keyize = function(salt) {
-		var sha = crypto.createHash('SHA256');
+		var sha = crypto.createHash(kexAlgorithms[kexAlgorithm]);
 		sha.write(
 			Buffer.concat(
 				[	composePacket([{ mpint : dh.secret}]),
@@ -231,8 +231,8 @@ var Session = function(conn) {
 							Object.keys(encryptionAlgorithms),
 							Object.keys(macAlgorithms),
 							Object.keys(macAlgorithms),
-							['none'],
-							['none'],
+							Object.keys(compressionAlgorithms),
+							Object.keys(compressionAlgorithms),
 							[],
 							[],
 							false,
@@ -356,7 +356,7 @@ var Session = function(conn) {
 				hashIn.push({ mpint : dh.getPublicKey() });
 				hashIn.push({ mpint : dh.secret });
 
-				var sha = crypto.createHash('sha256');
+				var sha = crypto.createHash(kexAlgorithms[kexAlgorithm]);
 				sha.write(composePacket(hashIn));
 				session = sha.digest();
 				sendPay(
@@ -372,12 +372,12 @@ var Session = function(conn) {
 				sendPay([{ byte : sshdefs.SSH_MSG_NEWKEYS }]);
 				keyson = true;
 				deciph = crypto.createDecipheriv(
-					'aes-256-ctr',
+					encryptionAlgorithms[CTSEncryptionAlgorithm],
 					keyize('C').digest(),
 					keyize('A').digest().slice(0,16)
 				);
 				cipher = crypto.createCipheriv(
-					'aes-256-ctr',
+					encryptionAlgorithms[STCEncryptionAlgorithm],
 					keyize('D').digest(),
 					keyize('B').digest().slice(0,16)
 				);
