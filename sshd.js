@@ -217,7 +217,16 @@ var Session = function(conn) {
 				);
 				hashIn.push(hostPub);
 				console.log("Cookie: " + packet.readString(16));
-				console.log("List: " + packet.readNameList());
+				console.log("KEX Algorithms: " + packet.readNameList());
+				console.log("SHK Algorithms: " + packet.readNameList());
+				console.log("Enc Algorithms <<: " + packet.readNameList());
+				console.log("Enc Algorithms >>: " + packet.readNameList());
+				console.log("MAC Algorithms <<: " + packet.readNameList());
+				console.log("MAC Algorithms >>: " + packet.readNameList());
+				console.log("Cmp Algorithms <<: " + packet.readNameList());
+				console.log("Cmp Algorithms >>: " + packet.readNameList());
+				console.log("Languages <<: " + packet.readNameList());
+				console.log("Languages >>: " + packet.readNameList());
 				break;
 
 			case sshdefs.SSH_MSG_KEX_DH_GEX_REQUEST_OLD:
