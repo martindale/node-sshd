@@ -40,7 +40,7 @@ var Session = function(conn) {
 
 	var self = this;
 
-	var cookie, deciph, dh, e, keyson, macC, macS, session, user;
+	var cookie, deciph, dh, e, keyson, mac, macC, macS, session, user;
 
 	var cipher = false;
 	var macLen = 0;
@@ -49,6 +49,28 @@ var Session = function(conn) {
 	var hashIn = [];
 	var keys = [];
 	var conn = conn;
+
+	var kexAlgorithms = [
+		'diffie-hellman-group-exchange-sha256'//,
+//		'diffie-hellman-group1-sha1',
+//		'diffie-hellman-group14-sha1'
+	];
+
+	var hostKeyAlgorithms = [
+		'ssh-rsa'//,
+//		'ssh-dss'
+	];
+
+	// We could specify different schemes for server->client and client-> server, but we don't.
+	var encryptionAlgorithms = [
+		'aes256-ctr'//,
+//		'3des-cbc'
+	];
+
+	var macAlgorithms = [
+		'hmac-md5'//,
+//		'hmac-sha1'
+	]
 
 	conn.on(
 		'error',
@@ -91,12 +113,12 @@ var Session = function(conn) {
 			sendPay(
 				[	{ byte : sshdefs.SSH_MSG_KEXINIT },
 					{ raw : cookie },
-					['diffie-hellman-group-exchange-sha256'],
-					['ssh-rsa'],
-					['aes256-ctr'],
-					['aes256-ctr'],
-					['hmac-md5'],
-					['hmac-md5'],
+					kexAlgorithms,
+					hostKeyAlgorithms,
+					encryptionAlgorithms,
+					encryptionAlgorithms,
+					macAlgorithms,
+					macAlgorithms,
 					['none'],
 					['none'],
 					[],
