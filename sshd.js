@@ -40,7 +40,8 @@ var Session = function(conn) {
 
 	var self = this;
 
-	var cookie, deciph, dh, e, keyson, mac, macC, macS, session, user;
+	var	cookie, deciph, dh, e, encryptionAlgorithm, keyson, kexAlgorithm, mac,
+		macC, macS, session, user;
 
 	var cipher = false;
 	var macLen = 0;
@@ -70,7 +71,7 @@ var Session = function(conn) {
 	var macAlgorithms = [
 		'hmac-md5'//,
 //		'hmac-sha1'
-	]
+	];
 
 	conn.on(
 		'error',
@@ -215,6 +216,17 @@ var Session = function(conn) {
 					)
 				);
 				hashIn.push(hostPub);
+				console.log(packet.readString());
+				console.log(packet.readString());
+				console.log(packet.readString());
+				console.log(packet.readString());
+				console.log(packet.readString());
+				console.log(packet.readString());
+				console.log(packet.readString());
+				console.log(packet.readString());
+				console.log(packet.readString());
+				console.log(packet.readString());
+				console.log(packet.readString());
 				break;
 
 			case sshdefs.SSH_MSG_KEX_DH_GEX_REQUEST_OLD:
