@@ -1,4 +1,4 @@
-var PacketReader = module.exports = function (buffer, mac, macLen, deciph, macC, seqC) {
+var PacketReader = module.exports = function (buffer, macLen, deciph, macC, seqC) {
 	var d1 = deciph ? deciph.update(buffer.slice(0, 5)) : buffer;
 	var pktLen = d1.readUInt32BE(0),
 	padLen = d1.readUInt8(4),
@@ -20,10 +20,10 @@ var PacketReader = module.exports = function (buffer, mac, macLen, deciph, macC,
 	if(macLen) {
 		var asdff = new Buffer(4);
 		asdff.writeUInt32BE(seqC, 0);
-		var hmac = require('crypto').createHmac(mac, macC.slice(0, 16)); // TODO: net::ssh key_expander.rb
-		hmac.write(Buffer.concat([asdff,d1,this.payload,this.padding]))
-		hmac = new Buffer(hmac.digest());
-		if(hmac.toString() != this.mac.toString())
+		var mac = require('crypto').createHmac('md5', macC.slice(0, 16)); // TODO: net::ssh key_expander.rb
+		mac.write(Buffer.concat([asdff,d1,this.payload,this.padding]))
+		mac = new Buffer(mac.digest());
+		if(mac.toString() != this.mac.toString())
 			console.log('SECURITY ERROR: MAC hash from client is incorrect');
 	};
 
