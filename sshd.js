@@ -72,7 +72,7 @@ var Session = function(conn) {
 	// Key Exchange Algorithms that this server supports, mapped to crypto()-friendly names
 	var kexAlgorithms = {
 		'diffie-hellman-group-exchange-sha256' : "SHA256",
-		'diffie-hellman-group1-sha1' : "SHA1",
+		'diffie-hellman-group1-sha1' : "SHA1"//,
 //		'diffie-hellman-group14-sha1'
 	};
 
@@ -90,8 +90,8 @@ var Session = function(conn) {
 
 	// MAC algorithms that this server supports, mapped to crypto()-friendly names.
 	var macAlgorithms = {
-		'hmac-md5' : "md5",
-		'hmac-sha1' : "sha1"
+		'hmac-md5' : "md5"//,
+//		'hmac-sha1' : "sha1"
 	};
 
 	// Compression algorithms that this server supports. "none" for now.
