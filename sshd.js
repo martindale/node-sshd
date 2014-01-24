@@ -104,7 +104,7 @@ var Session = function(conn) {
 				data = data.slice(eof + 1);
 			}
 			while(data.length >= 4) {
-				var packet = new PacketReader(data, macLen, deciph, macC, seqC, CTSMacAlgorithm);
+				var packet = new PacketReader(data, macLen, deciph, macC, seqC, CTSMacAlgorithm.split('-')[1]);
 				getPacket(packet);
 				seqC += 1;
 				data = data.slice(packet.totLen);
