@@ -216,17 +216,6 @@ var Session = function(conn) {
 					)
 				);
 				hashIn.push(hostPub);
-				console.log(packet.readString());
-				console.log(packet.readString());
-				console.log(packet.readString());
-				console.log(packet.readString());
-				console.log(packet.readString());
-				console.log(packet.readString());
-				console.log(packet.readString());
-				console.log(packet.readString());
-				console.log(packet.readString());
-				console.log(packet.readString());
-				console.log(packet.readString());
 				break;
 
 			case sshdefs.SSH_MSG_KEX_DH_GEX_REQUEST_OLD:
