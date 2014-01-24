@@ -216,15 +216,8 @@ var Session = function(conn) {
 					)
 				);
 				hashIn.push(hostPub);
-				console.log(packet.readUInt8() + packet.readUInt8());
-				console.log(packet.readNameList());
-				console.log(packet.readNameList());
-				console.log(packet.readNameList());
-				console.log(packet.readNameList());
-				console.log(packet.readNameList());
-				console.log(packet.readNameList());
-				console.log(packet.readNameList());
-				console.log(packet.readNameList());
+				console.log("Cookie: " + packet.readUInt16());
+				console.log("List: " + packet.readNameList());
 				break;
 
 			case sshdefs.SSH_MSG_KEX_DH_GEX_REQUEST_OLD:

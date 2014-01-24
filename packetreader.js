@@ -39,6 +39,10 @@ PacketReader.prototype = {
 		return this.payload.readUInt8((this.idx += 1) - 1);
 	},
 
+	readUInt16 : function() {
+		return this.payload.readUInt16BE((this.idx += 2) - 2);
+	}
+
 	readUInt32 : function() {
 		return this.payload.readUInt32BE((this.idx += 4) - 4);
 	},
