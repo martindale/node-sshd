@@ -67,7 +67,7 @@ PacketReader.prototype = {
 	readNameList : function() {
 		var len = this.readUInt32();
 		return this.readString(len).split(',');
-	}
+	},
 
 	readMpint : function() {
 		var buff = this.readBuffer();
