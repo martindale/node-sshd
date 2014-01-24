@@ -43,16 +43,13 @@ var Session = function(conn) {
 	var self = this;
 
 	var	cookie, CTSCompressionAlgorithm, CTSEncryptionAlgorithm,
-		CTSMacAlgorithm, deciph, dh, e, hostKeyAlgorithm, keyson,
-		kexAlgorithm, macC, macS, session, STCCompressionAlgorithm,
-		STCEncryptionAlgorithm, STCMacAlgorithm, user;
+		CTSMacAlgorithm, dh, e, hostKeyAlgorithm, keyson, kexAlgorithm, macC,
+		macS, session, STCCompressionAlgorithm,	STCEncryptionAlgorithm,
+		STCMacAlgorithm, user;
 
-	var cipher = false;
-	var macLen = 0;
-	var seqS = 0;
-	var seqC = 0;
-	var hashIn = [];
-	var keys = [];
+	var deciph = false, cipher = false;
+	var macLen = 0, seqS = 0, seqC = 0;
+	var hashIn = [], keys = [];
 	var conn = conn;
 
 	var kexAlgorithms = {
