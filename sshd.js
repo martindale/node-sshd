@@ -43,9 +43,9 @@ var Session = function(conn) {
 	var self = this;
 
 	var	cookie, CTSCompressionAlgorithm, CTSEncryptionAlgorithm,
-		CTSMacAlgorithm, deciph, dh, e, hostKey, hostDSAKey, hostDSAPub,
-		hostRSAKey, hostRSAPub,	hostKeyAlgorithm, keyson, kexAlgorithm, macC,
-		macS, session, STCCompressionAlgorithm, STCEncryptionAlgorithm,
+		CTSMacAlgorithm, deciph, dh, e, hostDSAKey, hostDSAPub, hostRSAKey,
+		hostRSAPub,	hostKeyAlgorithm, keyson, kexAlgorithm, macC, macS,
+		session, STCCompressionAlgorithm, STCEncryptionAlgorithm,
 		STCMacAlgorithm, user;
 
 	var cipher = false;
